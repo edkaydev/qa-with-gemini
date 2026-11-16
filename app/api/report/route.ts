@@ -1,4 +1,4 @@
-import { cleanMessages, clientKey, jsonError, rateLimit } from "@/lib/api";
+import { cleanMessages, clientKey, jsonError, rateLimit, readLimitedJson } from "@/lib/api";
 import { GeminiError, generateGeminiJson } from "@/lib/gemini";
 import {
   REPORT_SCHEMA,
@@ -16,12 +16,8 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError("Too many requests. Please wait a moment and try again.", 429, limit.retryAfter);
   }
 
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return jsonError("Invalid request.", 400);
-  }
+  const body = await readLimitedJson(request, 128_000);
+  if (body instanceof Response) return body;
 
   const messages = cleanMessages((body as { messages?: unknown } | null)?.messages, {
     maxMessages: 60,
