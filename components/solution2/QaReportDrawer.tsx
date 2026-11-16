@@ -102,7 +102,7 @@ export function QaReportDrawer({
         aria-labelledby="qa-report-title"
         className="flex h-full w-full max-w-2xl animate-slide-in-right flex-col bg-white shadow-float"
       >
-        <div className="sticky top-0 z-10 bg-white/90 shadow-soft backdrop-blur-xl">
+        <div className="sticky top-0 z-10 bg-white/90 backdrop-blur-xl">
           <div className="flex items-start justify-between gap-4 px-5 py-4 sm:px-7 sm:py-5">
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-umu-red-soft text-umu-red">
@@ -296,7 +296,7 @@ export function QaReportDrawer({
           </div>
         </div>
 
-        <div className="safe-bottom bg-white px-5 py-4 shadow-[0_-12px_32px_rgba(26,26,46,0.06)] sm:px-7">
+        <div className="safe-bottom bg-white px-5 py-4 sm:px-7">
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button type="button" onClick={onClose} className="btn-secondary">
               Close
