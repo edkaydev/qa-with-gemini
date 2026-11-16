@@ -48,6 +48,20 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: "/solution3",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/solution3/:path*",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
