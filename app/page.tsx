@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { Reveal } from "@/components/ui/Reveal";
 import { Logo } from "@/components/brand/Logo";
 import { CourseIcon } from "@/components/ui/CourseIcon";
 import { ProgressBar } from "@/components/ui/ProgressBar";
@@ -80,7 +81,7 @@ function HeroPreview() {
           ))}
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-line pt-3">
+        <div className="mt-4 flex items-center justify-between pt-4">
           <span className="text-[11px] text-faint">Tap an answer to continue</span>
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-umu-red">
             Auto-advance <ArrowRight size={12} aria-hidden="true" />
@@ -88,20 +89,22 @@ function HeroPreview() {
         </div>
       </div>
 
-      <div className="absolute -bottom-10 -left-4 w-[240px] rotate-[-3deg] rounded-2xl border border-line bg-white p-3.5 shadow-lift sm:-left-10">
-        <div className="flex items-center gap-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-white">
-            AI
-          </span>
-          <p className="text-[11px] font-semibold text-ink">Conversation mode</p>
-        </div>
-        <p className="mt-2 text-[11px] leading-relaxed text-muted">
-          “The Monday block felt like a playlist, not a class. I stopped taking notes after week
-          three.”
-        </p>
-        <div className="mt-2 flex items-center gap-1.5 text-[10px] font-medium text-success">
-          <span className="h-1.5 w-1.5 rounded-full bg-success" />
-          Captured in the student&apos;s words
+      <div className="absolute -bottom-10 -left-4 w-[240px] rotate-[-3deg] sm:-left-10">
+        <div className="animate-float-slow rounded-2xl border border-line bg-white p-3.5 shadow-lift">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-white">
+              AI
+            </span>
+            <p className="text-[11px] font-semibold text-ink">Conversation mode</p>
+          </div>
+          <p className="mt-2 text-[11px] leading-relaxed text-muted">
+            “The Monday block felt like a playlist, not a class. I stopped taking notes after week
+            three.”
+          </p>
+          <div className="mt-2 flex items-center gap-1.5 text-[10px] font-medium text-success">
+            <span className="h-1.5 w-1.5 rounded-full bg-success" />
+            Captured in the student&apos;s words
+          </div>
         </div>
       </div>
     </div>
@@ -159,12 +162,14 @@ function SolutionCard({
   return (
     <Link
       href={href}
-      className="group card-surface relative flex flex-col overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:border-ink/15 hover:shadow-lift focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 sm:p-7"
+      className="group card-surface relative flex h-full flex-col overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 sm:p-7"
     >
       <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${styles.top}`} />
       <div className="flex items-start justify-between gap-4">
         <span className={`text-[13px] font-black tracking-tight ${styles.number}`}>{number}</span>
-        <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${styles.icon}`}>
+        <span
+          className={`flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-110 ${styles.icon}`}
+        >
           {icon}
         </span>
       </div>
@@ -251,11 +256,14 @@ function ChatPreview() {
 export default function HomePage() {
   return (
     <div className="relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[720px] hero-glow" aria-hidden="true" />
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-[720px] hero-glow animate-glow"
+        aria-hidden="true"
+      />
       <div className="pointer-events-none absolute right-0 top-0 hidden h-[420px] w-[420px] dot-grid opacity-40 lg:block" aria-hidden="true" />
 
       <SiteHeader
-        className="border-transparent bg-white/70"
+        className="bg-white/70"
         right={
           <Link
             href="/solution1"
@@ -270,7 +278,7 @@ export default function HomePage() {
       <section className="relative">
         <div className="container-page pb-20 pt-14 sm:pb-28 sm:pt-20">
           <div className="grid items-center gap-14 lg:grid-cols-[1.02fr_0.98fr] lg:gap-10">
-            <div className="relative z-10">
+            <Reveal className="relative z-10">
               <div className="inline-flex items-center gap-2 rounded-full border border-line bg-white/80 px-3 py-1.5 text-[11px] font-semibold text-muted backdrop-blur">
                 <span className="h-1.5 w-1.5 rounded-full bg-umu-red" aria-hidden="true" />
                 Semester II · 2025/2026
@@ -321,51 +329,58 @@ export default function HomePage() {
                   Built with students
                 </span>
               </div>
-            </div>
+            </Reveal>
 
-            <div className="relative">
+            <Reveal className="relative" delay={120}>
               <HeroPreview />
-            </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
-      <section className="relative border-y border-line bg-surface-1/60">
+      <section className="relative bg-surface-1/60">
         <div className="container-page py-16 sm:py-20">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div>
-              <p className="label-kicker">The problem</p>
-              <h2 className="mt-3 max-w-[460px] text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
-                When the form is long and the exam is close, the data stops being honest.
-              </h2>
-              <p className="mt-4 max-w-[460px] text-sm leading-relaxed text-muted">
-                Students are not choosing to give false information. The process is making the
-                fastest answer the safest answer. That is a design problem — and it has three
-                layers.
-              </p>
-            </div>
-
-            <figure className="relative rounded-3xl border border-line bg-white p-7 sm:p-9">
-              <Quote size={28} className="text-umu-yellow" aria-hidden="true" />
-              <blockquote className="mt-4 text-balance text-2xl font-bold leading-snug tracking-[-0.02em] text-ink sm:text-[28px]">
-                “I just tick anything to get my exam card.”
-              </blockquote>
-              <figcaption className="mt-4 text-xs font-medium text-muted">
-                Third-year Computer Science student · anonymous
-              </figcaption>
-              <div className="mt-6 grid gap-2 sm:grid-cols-3">
-                {[
-                  ["Too long", "A wall of questions per unit."],
-                  ["Too late", "Feedback after memory fades."],
-                  ["Too thin", "Tick boxes miss the story."],
-                ].map(([title, body]) => (
-                  <div key={title} className="rounded-xl border border-line bg-surface-1 p-3">
-                    <p className="text-[11px] font-bold text-ink">{title}</p>
-                    <p className="mt-1 text-[10px] leading-relaxed text-muted">{body}</p>
-                  </div>
-                ))}
+            <Reveal>
+              <div>
+                <p className="label-kicker">The problem</p>
+                <h2 className="mt-3 max-w-[460px] text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
+                  When the form is long and the exam is close, the data stops being honest.
+                </h2>
+                <p className="mt-4 max-w-[460px] text-sm leading-relaxed text-muted">
+                  Students are not choosing to give false information. The process is making the
+                  fastest answer the safest answer. That is a design problem — and it has three
+                  layers.
+                </p>
               </div>
-            </figure>
+            </Reveal>
+
+            <Reveal delay={100}>
+              <figure className="relative rounded-3xl border border-line bg-white p-7 shadow-soft sm:p-9">
+                <Quote size={28} className="text-umu-yellow" aria-hidden="true" />
+                <blockquote className="mt-4 text-balance text-2xl font-bold leading-snug tracking-[-0.02em] text-ink sm:text-[28px]">
+                  “I just tick anything to get my exam card.”
+                </blockquote>
+                <figcaption className="mt-4 text-xs font-medium text-muted">
+                  Third-year Computer Science student · anonymous
+                </figcaption>
+                <div className="mt-6 grid gap-2 sm:grid-cols-3">
+                  {[
+                    ["Too long", "A wall of questions per unit."],
+                    ["Too late", "Feedback after memory fades."],
+                    ["Too thin", "Tick boxes miss the story."],
+                  ].map(([title, body]) => (
+                    <div
+                      key={title}
+                      className="rounded-xl border border-line bg-surface-1 p-3 transition-transform duration-300 hover:-translate-y-0.5"
+                    >
+                      <p className="text-[11px] font-bold text-ink">{title}</p>
+                      <p className="mt-1 text-[10px] leading-relaxed text-muted">{body}</p>
+                    </div>
+                  ))}
+                </div>
+              </figure>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -386,48 +401,54 @@ export default function HomePage() {
           </div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
-            <SolutionCard
-              number="Solution 01"
-              href="/solution1"
-              eyebrow="Focus mode"
-              title="One question. One answer. Next."
-              description="A tap-through evaluation that keeps students reading instead of scrolling. Progress, time left, and a resume that respects their time."
-              tags={["Auto-advance", "Progress bar", "Resume later"]}
-              icon={<MousePointerClick size={20} aria-hidden="true" />}
-              accent="red"
-              preview={<FocusPreview />}
-            />
-            <SolutionCard
-              number="Solution 02"
-              href="/solution2"
-              eyebrow="Conversation mode"
-              title="Say it the way you'd say it."
-              description="A natural-language interview that asks one thing at a time, follows up on vague answers, and turns the conversation into a QA summary."
-              tags={["AI interviewer", "One question at a time", "QA summary"]}
-              icon={<MessageCircle size={20} aria-hidden="true" />}
-              accent="yellow"
-              preview={<ChatPreview />}
-            />
+            <Reveal>
+              <SolutionCard
+                number="Solution 01"
+                href="/solution1"
+                eyebrow="Focus mode"
+                title="One question. One answer. Next."
+                description="A tap-through evaluation that keeps students reading instead of scrolling. Progress, time left, and a resume that respects their time."
+                tags={["Auto-advance", "Progress bar", "Resume later"]}
+                icon={<MousePointerClick size={20} aria-hidden="true" />}
+                accent="red"
+                preview={<FocusPreview />}
+              />
+            </Reveal>
+            <Reveal delay={110}>
+              <SolutionCard
+                number="Solution 02"
+                href="/solution2"
+                eyebrow="Conversation mode"
+                title="Say it the way you'd say it."
+                description="A natural-language interview that asks one thing at a time, follows up on vague answers, and turns the conversation into a QA summary."
+                tags={["AI interviewer", "One question at a time", "QA summary"]}
+                icon={<MessageCircle size={20} aria-hidden="true" />}
+                accent="yellow"
+                preview={<ChatPreview />}
+              />
+            </Reveal>
           </div>
         </div>
       </section>
 
-      <section className="border-y border-line bg-ink text-white">
+      <section className="bg-ink text-white">
         <div className="container-page py-16 sm:py-20">
           <div className="grid gap-10 lg:grid-cols-[1fr_1.15fr] lg:items-center">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-umu-yellow">
-                What changes
-              </p>
-              <h2 className="mt-3 text-balance text-3xl font-black leading-tight tracking-[-0.03em] sm:text-4xl">
-                Better questions. Better evidence.
-              </h2>
-              <p className="mt-4 max-w-[480px] text-sm leading-relaxed text-white/60">
-                The Quality Assurance Directorate gets feedback that is specific, current, and
-                comparable across units — without asking students to choose between honesty and
-                their exam card.
-              </p>
-            </div>
+            <Reveal>
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-umu-yellow">
+                  What changes
+                </p>
+                <h2 className="mt-3 text-balance text-3xl font-black leading-tight tracking-[-0.03em] sm:text-4xl">
+                  Better questions. Better evidence.
+                </h2>
+                <p className="mt-4 max-w-[480px] text-sm leading-relaxed text-white/60">
+                  The Quality Assurance Directorate gets feedback that is specific, current, and
+                  comparable across units — without asking students to choose between honesty and
+                  their exam card.
+                </p>
+              </div>
+            </Reveal>
             <div className="grid gap-3 sm:grid-cols-2">
               {[
                 {
@@ -442,16 +463,15 @@ export default function HomePage() {
                   label: "guided prompts",
                   body: "The conversation follows up instead of moving on.",
                 },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-5"
-                >
-                  <item.icon size={18} className="text-umu-yellow" aria-hidden="true" />
-                  <p className="mt-4 text-3xl font-black tracking-tight">{item.value}</p>
-                  <p className="text-xs font-semibold text-white/80">{item.label}</p>
-                  <p className="mt-2 text-[11px] leading-relaxed text-white/50">{item.body}</p>
-                </div>
+              ].map((item, index) => (
+                <Reveal key={item.label} delay={index * 100}>
+                  <div className="h-full rounded-2xl border border-white/10 bg-white/[0.04] p-5 transition-colors duration-300 hover:bg-white/[0.08]">
+                    <item.icon size={18} className="text-umu-yellow" aria-hidden="true" />
+                    <p className="mt-4 text-3xl font-black tracking-tight">{item.value}</p>
+                    <p className="text-xs font-semibold text-white/80">{item.label}</p>
+                    <p className="mt-2 text-[11px] leading-relaxed text-white/50">{item.body}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -460,30 +480,32 @@ export default function HomePage() {
 
       <section className="py-16 sm:py-20">
         <div className="container-page">
-          <div className="flex flex-col items-start justify-between gap-6 rounded-3xl border border-line bg-surface-1 p-7 sm:flex-row sm:items-center sm:p-9">
-            <div>
-              <p className="label-kicker">Ready when you are</p>
-              <h2 className="mt-2 text-2xl font-black tracking-[-0.02em] text-ink">
-                Pick a path. See the difference.
-              </h2>
-              <p className="mt-2 text-sm text-muted">
-                {COURSES.length} units · {COURSES.length} chances to say something useful.
-              </p>
+          <Reveal>
+            <div className="flex flex-col items-start justify-between gap-6 rounded-3xl border border-line bg-surface-1 p-7 shadow-soft sm:flex-row sm:items-center sm:p-9">
+              <div>
+                <p className="label-kicker">Ready when you are</p>
+                <h2 className="mt-2 text-2xl font-black tracking-[-0.02em] text-ink">
+                  Pick a path. See the difference.
+                </h2>
+                <p className="mt-2 text-sm text-muted">
+                  {COURSES.length} units · {COURSES.length} chances to say something useful.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Link href="/solution1" className="btn-primary">
+                  Focus mode
+                  <ArrowRight size={16} aria-hidden="true" />
+                </Link>
+                <Link href="/solution2" className="btn-secondary">
+                  Conversation mode
+                </Link>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <Link href="/solution1" className="btn-primary">
-                Focus mode
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-              <Link href="/solution2" className="btn-secondary">
-                Conversation mode
-              </Link>
-            </div>
-          </div>
+          </Reveal>
         </div>
       </section>
 
-      <footer className="border-t border-line bg-white">
+      <footer className="bg-white">
         <div className="container-page flex flex-col gap-6 py-10 sm:flex-row sm:items-center sm:justify-between">
           <Logo size={38} />
           <div className="flex flex-col gap-2 text-xs text-muted sm:items-end">

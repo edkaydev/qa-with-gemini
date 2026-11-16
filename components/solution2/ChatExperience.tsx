@@ -15,6 +15,7 @@ import {
   X,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { Reveal } from "@/components/ui/Reveal";
 import { CourseIcon } from "@/components/ui/CourseIcon";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -284,7 +285,7 @@ function HowCard() {
           </div>
         ))}
       </div>
-      <p className="mt-4 border-t border-line pt-3 text-[10px] leading-relaxed text-faint">
+      <p className="mt-4 pt-3 text-[10px] leading-relaxed text-faint">
         Confidential. Your name is not attached to the feedback in reports.
       </p>
     </div>
@@ -626,44 +627,48 @@ export function ChatExperience() {
       <div className="bg-surface-1/60">
         <div className="container-page py-7 sm:py-10">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusPill tone="yellow" icon={<MessageCircle size={11} aria-hidden="true" />}>
-                  Conversation mode
-                </StatusPill>
-                <StatusPill tone={completed ? "success" : streaming ? "red" : "neutral"}>
-                  {completed ? "Complete" : streaming ? "Listening…" : "Ready"}
-                </StatusPill>
+            <Reveal>
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <StatusPill tone="yellow" icon={<MessageCircle size={11} aria-hidden="true" />}>
+                    Conversation mode
+                  </StatusPill>
+                  <StatusPill tone={completed ? "success" : streaming ? "red" : "neutral"}>
+                    {completed ? "Complete" : streaming ? "Listening…" : "Ready"}
+                  </StatusPill>
+                </div>
+                <h1 className="mt-3 text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
+                  A conversation, not a form.
+                </h1>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+                  One question at a time, in your own words. Say the thing you would normally skip.
+                </p>
               </div>
-              <h1 className="mt-3 text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
-                A conversation, not a form.
-              </h1>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-                One question at a time, in your own words. Say the thing you would normally skip.
-              </p>
-            </div>
-            <div className="hidden items-center gap-4 rounded-2xl border border-line bg-white px-4 py-3 sm:flex">
-              <div className="flex items-center gap-2">
-                <Timer size={15} className="text-umu-red" aria-hidden="true" />
-                <div>
-                  <p className="text-[10px] font-semibold text-ink">About 2 minutes</p>
-                  <p className="text-[9px] text-muted">One question at a time</p>
+            </Reveal>
+            <Reveal delay={90} className="hidden sm:block">
+              <div className="hidden items-center gap-4 rounded-2xl border border-line bg-white px-4 py-3 sm:flex">
+                <div className="flex items-center gap-2">
+                  <Timer size={15} className="text-umu-red" aria-hidden="true" />
+                  <div>
+                    <p className="text-[10px] font-semibold text-ink">About 2 minutes</p>
+                    <p className="text-[9px] text-muted">One question at a time</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Lock size={14} className="text-success" aria-hidden="true" />
+                  <div>
+                    <p className="text-[10px] font-semibold text-ink">Confidential</p>
+                    <p className="text-[9px] text-muted">Nothing affects clearance</p>
+                  </div>
                 </div>
               </div>
-              <span className="h-7 w-px bg-line" />
-              <div className="flex items-center gap-2">
-                <Lock size={14} className="text-success" aria-hidden="true" />
-                <div>
-                  <p className="text-[10px] font-semibold text-ink">Confidential</p>
-                  <p className="text-[9px] text-muted">Nothing affects clearance</p>
-                </div>
-              </div>
-            </div>
+            </Reveal>
           </div>
 
           <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-            <section className="card-surface flex min-h-[620px] flex-col overflow-hidden">
-              <div className="flex items-center justify-between gap-3 border-b border-line px-4 py-3 sm:px-5">
+            <Reveal delay={120} className="min-h-[620px]">
+              <section className="card-surface flex h-full min-h-[620px] flex-col overflow-hidden">
+              <div className="flex items-center justify-between gap-3 bg-surface-1/50 px-4 py-3 sm:px-5">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-white">
                     <Sparkles size={15} aria-hidden="true" />
@@ -740,7 +745,7 @@ export function ChatExperience() {
               ) : null}
 
               {completed ? (
-                <div className="border-t border-line bg-success-soft/40 px-4 py-3 sm:px-5">
+                <div className="bg-success-soft/40 px-4 py-3 sm:px-5">
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex items-center gap-2.5">
                       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-success text-white">
@@ -776,7 +781,7 @@ export function ChatExperience() {
                   </div>
                 </div>
               ) : (
-                <div className="border-t border-line p-3 sm:p-4">
+                <div className="bg-surface-1/40 p-3 sm:p-4">
                   {firstTurn ? (
                     <div className="mb-3 flex flex-wrap gap-1.5">
                       {["They were mostly okay", "It varied by unit", "There were serious issues"].map(
@@ -840,28 +845,37 @@ export function ChatExperience() {
                   </div>
                 </div>
               )}
-            </section>
+              </section>
+            </Reveal>
 
             <aside className="space-y-3">
-              <UnitsCard mentioned={mentioned} />
-              <ProgressCard userTurns={userTurns} completed={completed} />
-              <ReportCard
-                state={reportState}
-                report={report}
-                completed={completed}
-                onOpen={() => setReportOpen(true)}
-                onRetry={() => {
-                  setReportState("idle");
-                  void generateReport(messages);
-                }}
-              />
-              <HowCard />
+              <Reveal delay={160}>
+                <UnitsCard mentioned={mentioned} />
+              </Reveal>
+              <Reveal delay={220}>
+                <ProgressCard userTurns={userTurns} completed={completed} />
+              </Reveal>
+              <Reveal delay={280}>
+                <ReportCard
+                  state={reportState}
+                  report={report}
+                  completed={completed}
+                  onOpen={() => setReportOpen(true)}
+                  onRetry={() => {
+                    setReportState("idle");
+                    void generateReport(messages);
+                  }}
+                />
+              </Reveal>
+              <Reveal delay={340}>
+                <HowCard />
+              </Reveal>
             </aside>
           </div>
         </div>
       </div>
 
-      <footer className="border-t border-line bg-white">
+      <footer className="bg-white">
         <div className="container-page flex flex-col gap-2 py-6 text-[10px] text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>Uganda Martyrs University · Office of Quality Assurance</p>
           <p className="inline-flex items-center gap-1.5">

@@ -48,7 +48,7 @@
   }
 
   .card-surface {
-    @apply rounded-3xl border border-line bg-white;
+    @apply rounded-3xl border border-line bg-white transition-shadow duration-300;
   }
 
   .label-kicker {
@@ -56,15 +56,15 @@
   }
 
   .btn-primary {
-    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-umu-red px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-umu-red-dark hover:shadow-lift focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-umu-red px-6 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-umu-red-dark hover:shadow-lift active:scale-[0.98] focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .btn-secondary {
-    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition-all duration-200 hover:border-umu-red/30 hover:bg-umu-red-soft focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 disabled:cursor-not-allowed disabled:opacity-40;
+    @apply inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-line bg-white px-6 py-3 text-sm font-semibold text-ink transition-all duration-200 hover:border-umu-red/30 hover:bg-umu-red-soft active:scale-[0.98] focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 disabled:cursor-not-allowed disabled:opacity-40;
   }
 
   .btn-ghost {
-    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-muted transition-colors hover:bg-surface-1 hover:text-ink focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20;
+    @apply inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-muted transition-all duration-200 hover:bg-surface-1 hover:text-ink active:scale-[0.98] focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20;
   }
 
   .chip {

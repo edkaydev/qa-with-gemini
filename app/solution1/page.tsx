@@ -20,6 +20,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { Reveal } from "@/components/ui/Reveal";
 import { CourseIcon } from "@/components/ui/CourseIcon";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { ProgressRing } from "@/components/ui/ProgressRing";
@@ -88,7 +89,7 @@ function CourseCard({
     <button
       type="button"
       onClick={onOpen}
-      className="group card-surface flex w-full flex-col p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-umu-red/25 hover:shadow-lift focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 sm:p-5"
+      className="group card-surface flex h-full w-full flex-col p-4 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-umu-red/25 hover:shadow-lift focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 sm:p-5"
       aria-label={`${completed ? "Review" : started ? "Resume" : "Start"} evaluation for ${course.title}`}
     >
       <div className="flex items-start justify-between gap-3">
@@ -134,7 +135,7 @@ function CourseCard({
         </div>
       ) : null}
 
-      <div className="mt-auto flex items-center justify-between border-t border-line pt-3">
+      <div className="mt-auto flex items-center justify-between pt-4">
         <span
           className={cn(
             "text-[11px] font-semibold",
@@ -313,31 +314,33 @@ function DashboardView({
   return (
     <div className="bg-surface-1/60">
       <div className="container-page py-8 sm:py-12">
-        <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <div className="flex flex-wrap items-center gap-2">
-              <StatusPill tone="red">Focus mode</StatusPill>
-              <StatusPill tone="neutral">
-                {STUDENT.semester} · {STUDENT.academicYear}
-              </StatusPill>
+        <Reveal>
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusPill tone="red">Focus mode</StatusPill>
+                <StatusPill tone="neutral">
+                  {STUDENT.semester} · {STUDENT.academicYear}
+                </StatusPill>
+              </div>
+              <h1 className="mt-4 text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
+                {greeting()}, {STUDENT.name}.
+              </h1>
+              <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
+                One question at a time. Tap an answer and move on. Your feedback is confidential,
+                and your clearance updates as you go.
+              </p>
             </div>
-            <h1 className="mt-4 text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
-              {greeting()}, {STUDENT.name}.
-            </h1>
-            <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-              One question at a time. Tap an answer and move on. Your feedback is confidential,
-              and your clearance updates as you go.
-            </p>
+            <button
+              type="button"
+              onClick={onReset}
+              className="btn-ghost -ml-2 w-fit gap-1.5 text-[11px] sm:-ml-0"
+            >
+              <RotateCcw size={13} aria-hidden="true" />
+              Reset progress
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onReset}
-            className="btn-ghost -ml-2 w-fit gap-1.5 text-[11px] sm:-ml-0"
-          >
-            <RotateCcw size={13} aria-hidden="true" />
-            Reset progress
-          </button>
-        </div>
+        </Reveal>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_340px]">
           <section>
@@ -354,13 +357,14 @@ function DashboardView({
             </div>
 
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {COURSES.map((course) => (
-                <CourseCard
-                  key={course.id}
-                  course={course}
-                  record={store[course.id]}
-                  onOpen={() => onOpenCourse(course.id)}
-                />
+              {COURSES.map((course, index) => (
+                <Reveal key={course.id} delay={index * 55}>
+                  <CourseCard
+                    course={course}
+                    record={store[course.id]}
+                    onOpen={() => onOpenCourse(course.id)}
+                  />
+                </Reveal>
               ))}
             </div>
 
@@ -381,47 +385,53 @@ function DashboardView({
                   title: "Confidential",
                   body: "Only the QA Directorate sees the aggregated picture.",
                 },
-              ].map((item) => (
-                <div key={item.title} className="rounded-2xl border border-line bg-white p-4">
-                  <item.icon size={16} className="text-umu-red" aria-hidden="true" />
-                  <p className="mt-2.5 text-xs font-bold text-ink">{item.title}</p>
-                  <p className="mt-1 text-[10px] leading-relaxed text-muted">{item.body}</p>
-                </div>
+              ].map((item, index) => (
+                <Reveal key={item.title} delay={index * 70}>
+                  <div className="h-full rounded-2xl border border-line bg-white p-4 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-soft">
+                    <item.icon size={16} className="text-umu-red" aria-hidden="true" />
+                    <p className="mt-2.5 text-xs font-bold text-ink">{item.title}</p>
+                    <p className="mt-1 text-[10px] leading-relaxed text-muted">{item.body}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
           </section>
 
           <aside className="h-fit space-y-4 lg:sticky lg:top-[96px]">
-            <ClearanceCard completedCount={completedCount} onViewClearance={onViewClearance} />
+            <Reveal delay={80}>
+              <ClearanceCard completedCount={completedCount} onViewClearance={onViewClearance} />
+            </Reveal>
             {allComplete ? (
               <div className="animate-scale-in">
                 <ExamCard />
               </div>
             ) : null}
-            <div className="card-surface p-5">
-              <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-umu-yellow-soft text-[#7A5A00]">
-                  <Lock size={15} aria-hidden="true" />
-                </span>
-                <h3 className="text-sm font-bold text-ink">What happens next</h3>
+            <Reveal delay={140}>
+              <div className="card-surface p-5">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-umu-yellow-soft text-[#7A5A00]">
+                    <Lock size={15} aria-hidden="true" />
+                  </span>
+                  <h3 className="text-sm font-bold text-ink">What happens next</h3>
+                </div>
+                <p className="mt-3 text-[11px] leading-relaxed text-muted">
+                  Your ratings go to the Quality Assurance Directorate. They are combined with other
+                  students&apos; responses and used to follow up with units that need support.
+                </p>
+                <div className="mt-4 space-y-2">
+                  {["Read by the QA office", "Grouped, never attributed", "Used to fix next semester"].map(
+                    (item, index) => (
+                      <div key={item} className="flex items-center gap-2 text-[11px] text-muted">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-1 text-[9px] font-bold text-ink">
+                          {index + 1}
+                        </span>
+                        {item}
+                      </div>
+                    ),
+                  )}
+                </div>
               </div>
-              <p className="mt-3 text-[11px] leading-relaxed text-muted">
-                Your ratings go to the Quality Assurance Directorate. They are combined with other
-                students&apos; responses and used to follow up with units that need support.
-              </p>
-              <div className="mt-4 space-y-2">
-                {["Read by the QA office", "Grouped, never attributed", "Used to fix next semester"].map(
-                  (item, index) => (
-                    <div key={item} className="flex items-center gap-2 text-[11px] text-muted">
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-1 text-[9px] font-bold text-ink">
-                        {index + 1}
-                      </span>
-                      {item}
-                    </div>
-                  ),
-                )}
-              </div>
-            </div>
+            </Reveal>
           </aside>
         </div>
       </div>
@@ -603,18 +613,18 @@ function ReviewView({
         </div>
 
         <div className="mt-6 card-surface overflow-hidden">
-          <div className="border-b border-line bg-surface-1 px-5 py-4">
+          <div className="bg-surface-1 px-5 py-4">
             <div className="flex items-center gap-2">
               <History size={15} className="text-muted" aria-hidden="true" />
               <p className="text-xs font-semibold text-ink">Your response</p>
               <span className="text-[10px] text-faint">· {questions.length} questions</span>
             </div>
           </div>
-          <div className="divide-y divide-line">
+          <div className="space-y-4 px-5 py-4">
             {questions.map((question, index) => {
               const value = record?.answers?.[question.id] ?? "";
               return (
-                <div key={question.id} className="px-5 py-4">
+                <div key={question.id}>
                   <div className="flex items-start gap-3">
                     <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-surface-1 text-[10px] font-bold text-muted">
                       {index + 1}
@@ -798,7 +808,7 @@ export default function SolutionOnePage() {
         destructive
       />
 
-      <footer className="border-t border-line bg-white">
+      <footer className="bg-white">
         <div className="container-page flex flex-col gap-2 py-6 text-[10px] text-faint sm:flex-row sm:items-center sm:justify-between">
           <p>Uganda Martyrs University · Office of Quality Assurance</p>
           <p className="inline-flex items-center gap-1.5">

@@ -103,6 +103,14 @@ const config: Config = {
           "0%": { strokeDashoffset: "48" },
           "100%": { strokeDashoffset: "0" },
         },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        glow: {
+          "0%, 100%": { opacity: "0.7", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.04)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both",
@@ -113,6 +121,9 @@ const config: Config = {
         caret: "caret 1s step-end infinite",
         "dot-bounce": "dot-bounce 1.2s ease-in-out infinite",
         "draw-check": "draw-check 0.5s ease-out both",
+        float: "float 6s ease-in-out infinite",
+        "float-slow": "float 8s ease-in-out infinite",
+        glow: "glow 9s ease-in-out infinite",
       },
     },
   },

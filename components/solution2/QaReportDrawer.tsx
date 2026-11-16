@@ -100,9 +100,9 @@ export function QaReportDrawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby="qa-report-title"
-        className="flex h-full w-full max-w-2xl animate-slide-in-right flex-col border-l border-line bg-white shadow-float"
+        className="flex h-full w-full max-w-2xl animate-slide-in-right flex-col bg-white shadow-float"
       >
-        <div className="sticky top-0 z-10 border-b border-line bg-white/95 backdrop-blur-xl">
+        <div className="sticky top-0 z-10 bg-white/90 shadow-soft backdrop-blur-xl">
           <div className="flex items-start justify-between gap-4 px-5 py-4 sm:px-7 sm:py-5">
             <div className="flex items-start gap-3">
               <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-umu-red-soft text-umu-red">
@@ -135,7 +135,7 @@ export function QaReportDrawer({
         </div>
 
         <div className="chat-scroll flex-1 overflow-y-auto px-5 py-5 sm:px-7 sm:py-6">
-          <div className="rounded-2xl border border-line bg-surface-1 p-5">
+          <div className="animate-fade-up rounded-2xl border border-line bg-surface-1 p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="label-kicker">Overview</p>
@@ -148,7 +148,7 @@ export function QaReportDrawer({
               </StatusPill>
             </div>
             <p className="mt-3 text-sm leading-relaxed text-muted">{report.overview}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-line pt-3 text-[11px] text-muted">
+            <div className="mt-4 flex flex-wrap items-center gap-3 pt-3 text-[11px] text-muted">
               <span className="inline-flex items-center gap-1.5">
                 <Target size={12} className="text-faint" aria-hidden="true" />
                 Average rating{" "}
@@ -169,7 +169,7 @@ export function QaReportDrawer({
             </div>
           </div>
 
-          <section className="mt-6">
+          <section className="mt-6 animate-fade-up" style={{ animationDelay: "80ms" }}>
             <div className="flex items-end justify-between gap-3">
               <h3 className="text-sm font-bold tracking-tight text-ink">Course-by-course</h3>
               <span className="text-[10px] font-medium text-faint">1–5 scale</span>
@@ -208,7 +208,7 @@ export function QaReportDrawer({
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="mt-6 animate-fade-up" style={{ animationDelay: "140ms" }}>
             <h3 className="flex items-center gap-1.5 text-sm font-bold tracking-tight text-ink">
               <CheckCircle2 size={15} className="text-success" aria-hidden="true" />
               Strengths
@@ -234,7 +234,7 @@ export function QaReportDrawer({
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="mt-6 animate-fade-up" style={{ animationDelay: "200ms" }}>
             <h3 className="flex items-center gap-1.5 text-sm font-bold tracking-tight text-ink">
               <AlertTriangle size={15} className="text-danger" aria-hidden="true" />
               Red flags
@@ -266,7 +266,7 @@ export function QaReportDrawer({
             </div>
           </section>
 
-          <section className="mt-6">
+          <section className="mt-6 animate-fade-up" style={{ animationDelay: "260ms" }}>
             <h3 className="text-sm font-bold tracking-tight text-ink">Priority actions</h3>
             <div className="mt-3 space-y-2">
               {report.actions.length === 0 ? (
@@ -287,7 +287,7 @@ export function QaReportDrawer({
             </div>
           </section>
 
-          <div className="mt-6 rounded-2xl border border-line bg-surface-1 p-4">
+          <div className="mt-6 animate-fade-up rounded-2xl border border-line bg-surface-1 p-4" style={{ animationDelay: "320ms" }}>
             <p className="flex items-start gap-2 text-[10px] leading-relaxed text-muted">
               <Lock size={12} className="mt-0.5 shrink-0 text-faint" aria-hidden="true" />
               This summary is generated from the conversation and is intended for internal quality
@@ -296,7 +296,7 @@ export function QaReportDrawer({
           </div>
         </div>
 
-        <div className="safe-bottom border-t border-line bg-white px-5 py-4 sm:px-7">
+        <div className="safe-bottom bg-white px-5 py-4 shadow-[0_-12px_32px_rgba(26,26,46,0.06)] sm:px-7">
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button type="button" onClick={onClose} className="btn-secondary">
               Close
