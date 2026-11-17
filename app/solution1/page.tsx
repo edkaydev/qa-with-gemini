@@ -142,7 +142,7 @@ function CourseCard({
             completed ? "text-success" : started ? "text-umu-red" : "text-ink",
           )}
         >
-          {completed ? "Review response" : started ? "Resume evaluation" : "Start evaluation"}
+          {completed ? "See what you said" : started ? "Pick up where you left off" : "Tell us about it"}
         </span>
         <span className="flex h-7 w-7 items-center justify-center rounded-full bg-surface-1 text-muted transition-all group-hover:bg-umu-red group-hover:text-white">
           <ArrowRight size={13} aria-hidden="true" />
@@ -327,8 +327,8 @@ function DashboardView({
                 {greeting()}.
               </h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-                One question at a time. Tap an answer and move on. Your feedback is confidential,
-                and your clearance updates as you go.
+                We will walk you through each unit, one short question at a time. Tap what feels
+                true to you — nothing you say here is tied to your name.
               </p>
             </div>
             <button
@@ -348,7 +348,7 @@ function DashboardView({
               <div>
                 <h2 className="text-lg font-bold tracking-tight text-ink">Your units</h2>
                 <p className="mt-0.5 text-[11px] text-muted">
-                  Six units · one short evaluation each
+                  Six units · a few minutes of your time
                 </p>
               </div>
               <span className="text-[11px] font-semibold text-muted">
@@ -372,18 +372,18 @@ function DashboardView({
               {[
                 {
                   icon: ClipboardCheck,
-                  title: "Every answer counts",
-                  body: "Results are grouped across the cohort, never shown with your name.",
+                  title: "Your honest take",
+                  body: "We group answers across the cohort. Your name stays out of it.",
                 },
                 {
                   icon: Sparkles,
-                  title: "Designed for focus",
-                  body: "One question fills the screen, so nothing gets skimmed.",
+                  title: "No long forms",
+                  body: "One question at a time, so you can answer as you remember.",
                 },
                 {
                   icon: ShieldCheck,
-                  title: "Confidential",
-                  body: "Only the QA Directorate sees the aggregated picture.",
+                  title: "Safe to say it",
+                  body: "Only the QA Directorate sees the bigger picture.",
                 },
               ].map((item, index) => (
                 <Reveal key={item.title} delay={index * 70}>
@@ -470,12 +470,12 @@ function CompletionView({
             </StatusPill>
           </div>
           <h1 className="mt-4 text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
-            {allComplete ? "You're cleared for exams." : "That unit is done."}
+            {allComplete ? "You're cleared for exams." : "Nice — that unit is covered."}
           </h1>
           <p className="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-muted">
             {allComplete
-              ? "All six unit evaluations are submitted. Your Semester II examination clearance is complete."
-              : `Your response for ${course.shortTitle} is in. Your evaluation clearance has been updated.`}
+              ? "All six unit evaluations are in. Your Semester II examination clearance is complete."
+              : `Thank you for sharing about ${course.shortTitle}. Your evaluation clearance has been updated.`}
           </p>
         </div>
 

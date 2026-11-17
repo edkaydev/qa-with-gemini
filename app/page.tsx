@@ -20,7 +20,7 @@ import { COURSES } from "@/lib/courses";
 
 function HeroPreview() {
   return (
-    <div className="relative mx-auto w-full max-w-[520px]">
+    <div className="relative z-20 mx-auto w-full max-w-[520px]">
       <div className="absolute -inset-6 -z-10 rounded-[40px] bg-gradient-to-br from-umu-red/5 via-umu-yellow/10 to-transparent blur-2xl" />
 
       <div className="card-surface relative overflow-hidden p-5 shadow-lift sm:p-6">
@@ -40,16 +40,16 @@ function HeroPreview() {
         </div>
 
         <p className="mt-6 text-[15px] font-semibold leading-snug text-ink">
-          New concepts were explained clearly, with examples beyond reading notes or slides.
+          When a topic was new, did the teaching help it click — or was it mostly notes and slides?
         </p>
 
         <div className="mt-4 space-y-2">
           {[
-            ["1", "Strongly disagree", false],
-            ["2", "Disagree", false],
-            ["3", "Neutral", false],
-            ["4", "Agree", true],
-            ["5", "Strongly agree", false],
+            ["1", "Not at all", false],
+            ["2", "Mostly not", false],
+            ["3", "It varied", false],
+            ["4", "Mostly yes", true],
+            ["5", "Consistently", false],
           ].map(([key, label, selected]) => (
             <div
               key={key as string}
@@ -89,7 +89,7 @@ function HeroPreview() {
         </div>
       </div>
 
-      <div className="absolute -bottom-10 -left-4 w-[240px] rotate-[-3deg] sm:-left-10">
+      <div className="absolute -bottom-10 -left-4 z-30 w-[240px] rotate-[-3deg] sm:-left-10">
         <div className="animate-float-slow rounded-2xl border border-line bg-white p-3.5 shadow-lift">
           <div className="flex items-center gap-2">
             <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-[10px] font-bold text-white">
@@ -253,7 +253,7 @@ export default function HomePage() {
   return (
     <div className="relative overflow-hidden">
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-[720px] hero-glow animate-glow"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[720px] hero-glow animate-glow"
         aria-hidden="true"
       />
       <div className="pointer-events-none absolute right-0 top-0 hidden h-[420px] w-[420px] dot-grid opacity-40 lg:block" aria-hidden="true" />
@@ -327,14 +327,14 @@ export default function HomePage() {
               </div>
             </Reveal>
 
-            <Reveal className="relative" delay={120}>
+            <Reveal className="relative z-20" delay={120}>
               <HeroPreview />
             </Reveal>
           </div>
         </div>
       </section>
 
-      <section className="relative bg-surface-1/60">
+      <section className="relative z-0 bg-surface-1/60">
         <div className="container-page py-16 sm:py-20">
           <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
             <Reveal>
@@ -402,9 +402,9 @@ export default function HomePage() {
                 number="Solution 01"
                 href="/solution1"
                 eyebrow="Focus mode"
-                title="One question. One answer. Next."
-                description="A tap-through evaluation that keeps students reading instead of scrolling. Progress, time left, and a resume that respects their time."
-                tags={["Auto-advance", "Progress bar", "Resume later"]}
+                title="Small questions. Honest answers."
+                description="A calm, tap-through check-in that asks about what really happened in each unit. Questions can be read aloud, and you can pick up where you left off."
+                tags={["Read aloud", "One at a time", "Resume later"]}
                 icon={<MousePointerClick size={20} aria-hidden="true" />}
                 accent="red"
                 preview={<FocusPreview />}

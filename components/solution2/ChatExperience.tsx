@@ -7,11 +7,15 @@ import {
   ChevronRight,
   Lock,
   MessageCircle,
+  Mic,
+  MicOff,
   RotateCcw,
   Send,
   ShieldCheck,
   Sparkles,
   Timer,
+  Volume2,
+  VolumeX,
   X,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -24,6 +28,7 @@ import { QaReportDrawer } from "@/components/solution2/QaReportDrawer";
 import { COURSES, courseSchedule } from "@/lib/courses";
 import {
   OPENING_MESSAGE,
+  coveredCourseIds,
   sanitizeStudentStream,
   type TranscriptMessage,
 } from "@/lib/prompts";
@@ -34,6 +39,7 @@ import {
   writeConversation,
   type ChatMessage,
 } from "@/lib/storage";
+import { useSpeechPlayback, useVoiceInput } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 
 type ReportState = "idle" | "loading" | "ready" | "error";
@@ -172,8 +178,9 @@ function UnitsCard({ mentioned }: { mentioned: Set<string> }) {
   );
 }
 
-function ProgressCard({ userTurns, completed }: { userTurns: number; completed: boolean }) {
-  const value = Math.min((userTurns / 6) * 100, 100);
+function ProgressCard({ coveredCount, completed }: { coveredCount: number; completed: boolean }) {
+  const remaining = COURSES.length - coveredCount;
+  const value = Math.min((coveredCount / COURSES.length) * 100, 100);
   return (
     <div className="card-surface p-5">
       <div className="flex items-end justify-between gap-3">
@@ -184,7 +191,7 @@ function ProgressCard({ userTurns, completed }: { userTurns: number; completed: 
           </h2>
         </div>
         <span className="text-[11px] font-semibold text-muted">
-          {userTurns} {userTurns === 1 ? "answer" : "answers"}
+          {coveredCount}/{COURSES.length} units
         </span>
       </div>
       <div className="mt-3">
@@ -193,9 +200,9 @@ function ProgressCard({ userTurns, completed }: { userTurns: number; completed: 
       <p className="mt-2 text-[10px] leading-relaxed text-muted">
         {completed
           ? "Thank you. The QA office now has a structured summary."
-          : userTurns >= 6
-            ? "You can keep going, or wrap up whenever you are ready."
-            : `Aim for about ${Math.max(6 - userTurns, 0)} more ${Math.max(6 - userTurns, 0) === 1 ? "answer" : "answers"}.`}
+          : remaining > 0
+            ? `${remaining} ${remaining === 1 ? "unit" : "units"} still to talk about. The assistant will get to each one.`
+            : "Every unit has been covered. You can wrap up whenever you are ready."}
       </p>
     </div>
   );
@@ -273,6 +280,7 @@ function HowCard() {
       <div className="mt-3 space-y-2.5">
         {[
           ["One question at a time", "The assistant listens before moving on."],
+          ["Every unit covered", "It comes back to any unit that has not come up yet."],
           ["Skip anything", "You are never forced to answer a question."],
           ["Nothing affects clearance", "This is separate from grades and exam eligibility."],
         ].map(([title, body]) => (
@@ -303,30 +311,21 @@ export function ChatExperience() {
   const [reportState, setReportState] = useState<ReportState>("idle");
   const [reportOpen, setReportOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
+  const [readAloud, setReadAloud] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const reportInFlight = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const nearBottomRef = useRef(true);
+  const appliedVoiceRef = useRef("");
+  const lastSpokenRef = useRef<string | null>(null);
+  const playback = useSpeechPlayback();
+  const voice = useVoiceInput();
 
   const userTurns = messages.filter((message) => message.role === "user").length;
 
-  const mentioned = useMemo(() => {
-    const corpus = messages
-      .slice(1)
-      .map((message) => message.content.toLowerCase())
-      .join(" ");
-    return new Set(
-      COURSES.filter((course) => {
-        return (
-          corpus.includes(course.shortTitle.toLowerCase()) ||
-          corpus.includes(course.title.toLowerCase()) ||
-          corpus.includes(course.lecturer.toLowerCase())
-        );
-      }).map((course) => course.id),
-    );
-  }, [messages]);
+  const mentioned = useMemo(() => new Set(coveredCourseIds(messages)), [messages]);
 
   useEffect(() => {
     const stored = readConversation();
@@ -344,6 +343,7 @@ export function ChatExperience() {
     } else {
       setMessages([openingMessage()]);
     }
+    setReadAloud(window.localStorage.getItem("umu.qa.readAloud") === "true");
     setReady(true);
   }, []);
 
@@ -358,8 +358,29 @@ export function ChatExperience() {
   useEffect(() => {
     return () => {
       abortRef.current?.abort();
+      playback.stop();
     };
-  }, []);
+  }, [playback.stop]);
+
+  useEffect(() => {
+    if (!readAloud || !playback.supported || streaming) return;
+    const latest = [...messages].reverse().find(
+      (message) => message.role === "assistant" && message.content.trim(),
+    );
+    if (!latest || lastSpokenRef.current === latest.id) return;
+    lastSpokenRef.current = latest.id;
+    playback.speak(latest.content);
+  }, [messages, streaming, readAloud, playback.supported, playback.speak]);
+
+  useEffect(() => {
+    if (!voice.finalText) return;
+    if (!voice.finalText.startsWith(appliedVoiceRef.current)) return;
+    const addition = voice.finalText.slice(appliedVoiceRef.current.length).trim();
+    appliedVoiceRef.current = voice.finalText;
+    if (addition) {
+      setInput((previous) => `${previous}${previous ? " " : ""}${addition}`.slice(0, 1500));
+    }
+  }, [voice.finalText]);
 
   useEffect(() => {
     const element = scrollRef.current;
@@ -540,6 +561,10 @@ export function ChatExperience() {
     const text = raw.trim();
     if (!text || streaming || completed) return;
 
+    if (voice.listening) voice.stop();
+    voice.reset();
+    appliedVoiceRef.current = "";
+
     const base = [...messages];
     while (
       base.length > 0 &&
@@ -577,6 +602,10 @@ export function ChatExperience() {
 
   function resetConversation() {
     abortRef.current?.abort();
+    playback.stop();
+    voice.reset();
+    appliedVoiceRef.current = "";
+    lastSpokenRef.current = null;
     clearConversation();
     setMessages([openingMessage()]);
     setCompleted(false);
@@ -600,6 +629,33 @@ export function ChatExperience() {
         confidential
         right={
           <div className="flex items-center gap-1.5">
+            {playback.supported ? (
+              <button
+                type="button"
+                aria-pressed={readAloud}
+                aria-label={readAloud ? "Turn off read aloud" : "Read questions aloud"}
+                title={readAloud ? "Turn off read aloud" : "Read questions aloud"}
+                onClick={() => {
+                  const next = !readAloud;
+                  setReadAloud(next);
+                  window.localStorage.setItem("umu.qa.readAloud", String(next));
+                  if (!next) playback.stop();
+                  if (next) lastSpokenRef.current = null;
+                }}
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-xl transition-colors",
+                  readAloud
+                    ? "bg-umu-red-soft text-umu-red"
+                    : "text-muted hover:bg-surface-1 hover:text-ink",
+                )}
+              >
+                {readAloud ? (
+                  <Volume2 size={16} aria-hidden="true" />
+                ) : (
+                  <VolumeX size={16} aria-hidden="true" />
+                )}
+              </button>
+            ) : null}
             {report ? (
               <button
                 type="button"
@@ -819,9 +875,38 @@ export function ChatExperience() {
                         }
                       }}
                       rows={1}
-                      placeholder="Type your answer…"
+                      placeholder={voice.listening ? "Listening… speak naturally" : "Type or tap the mic to answer…"}
                       className="max-h-[140px] min-h-[44px] flex-1 resize-none bg-transparent px-2 py-2.5 text-sm leading-relaxed text-ink placeholder:text-faint focus:outline-none"
                     />
+                    {voice.supported ? (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (voice.listening) {
+                            voice.stop();
+                          } else {
+                            appliedVoiceRef.current = "";
+                            voice.start();
+                          }
+                        }}
+                        disabled={streaming}
+                        aria-pressed={voice.listening}
+                        aria-label={voice.listening ? "Stop voice answer" : "Answer with your voice"}
+                        title={voice.listening ? "Stop voice answer" : "Answer with your voice"}
+                        className={cn(
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border transition-colors disabled:cursor-not-allowed disabled:opacity-30",
+                          voice.listening
+                            ? "animate-pulse-soft border-success-line bg-success-soft text-success"
+                            : "border-line bg-surface-1 text-muted hover:border-umu-red/30 hover:text-umu-red",
+                        )}
+                      >
+                        {voice.listening ? (
+                          <MicOff size={17} aria-hidden="true" />
+                        ) : (
+                          <Mic size={17} aria-hidden="true" />
+                        )}
+                      </button>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => sendMessage(input)}
@@ -836,8 +921,16 @@ export function ChatExperience() {
                       )}
                     </button>
                   </div>
+                  {voice.interimText ? (
+                    <p className="mt-2 px-1 text-[11px] italic text-muted" aria-live="polite">
+                      Listening… {voice.interimText}
+                    </p>
+                  ) : null}
+                  {voice.error ? (
+                    <p className="mt-2 px-1 text-[11px] text-danger">{voice.error}</p>
+                  ) : null}
                   <div className="mt-2 flex items-center justify-between px-1 text-[9px] text-faint">
-                    <span>Enter to send · Shift + Enter for a new line</span>
+                    <span>Enter to send · tap the mic to speak</span>
                     <span className="inline-flex items-center gap-1">
                       <Lock size={9} aria-hidden="true" />
                       Confidential
@@ -853,7 +946,7 @@ export function ChatExperience() {
                 <UnitsCard mentioned={mentioned} />
               </Reveal>
               <Reveal delay={220}>
-                <ProgressCard userTurns={userTurns} completed={completed} />
+                <ProgressCard coveredCount={mentioned.size} completed={completed} />
               </Reveal>
               <Reveal delay={280}>
                 <ReportCard

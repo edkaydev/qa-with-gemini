@@ -1,4 +1,4 @@
-import { COURSES, STUDENT, courseSchedule } from "./courses";
+import { COURSES, STUDENT, courseSchedule, type Course } from "./courses";
 
 export const SENTINEL = "[[DONE]]";
 
@@ -15,12 +15,43 @@ export const OPENING_MESSAGE = `Hi there — thanks for making a few minutes for
 
 Let's start with Data Mining and Business Intelligence. Mr. Mukyaake had the Monday 8:30 AM – 1:00 PM block — how did those sessions go for you?`;
 
-export function chatSystemPrompt(userTurns: number): string {
+export function coveredCourseIds(messages: TranscriptMessage[]): string[] {
+  const asked = new Set<string>();
+  const covered = new Set<string>();
+
+  for (const message of messages) {
+    const text = message.content.toLowerCase();
+    if (!text.trim()) continue;
+
+    if (message.role === "assistant") {
+      for (const course of COURSES) {
+        const surname = course.lecturer.split(" ").pop()?.toLowerCase() ?? "";
+        if (
+          text.includes(course.title.toLowerCase()) ||
+          text.includes(course.shortTitle.toLowerCase()) ||
+          text.includes(course.lecturer.toLowerCase()) ||
+          (surname.length > 3 && text.includes(surname))
+        ) {
+          asked.add(course.id);
+        }
+      }
+    } else {
+      asked.forEach((id) => covered.add(id));
+    }
+  }
+
+  return COURSES.filter((course) => covered.has(course.id)).map((course) => course.id);
+}
+
+export function chatSystemPrompt(userTurns: number, remaining: Course[] = COURSES): string {
+  const remainingLabel = remaining.length
+    ? remaining.map((course) => `${course.title} (${course.lecturer})`).join(", ")
+    : "none";
   const stage =
-    userTurns >= 8
-      ? "The student has now given eight or more answers. Close the interview after responding to this answer."
+    remaining.length > 0 && userTurns < 11
+      ? `UNITS STILL TO COVER: ${remainingLabel}. Your next question must be about one of these units. Do not close the conversation yet, even if the other areas are covered.`
       : userTurns >= 6
-        ? "The student has given six or seven answers. Aim to close after this answer, once the most important areas are covered."
+        ? "All units have been covered, or the conversation has reached its natural end. Close warmly after responding to this answer."
         : "You are still in the middle of the interview. Keep listening and probing.";
 
   return `You are a warm, perceptive course-evaluation interviewer for the Office of Quality Assurance at Uganda Martyrs University. You are speaking with a ${STUDENT.programme} ${STUDENT.year} student in ${STUDENT.semester}, ${STUDENT.academicYear}. Your job is to understand the student's real experience of six units, in their own words, so the Quality Assurance Directorate can see what is working and what needs action.
@@ -45,8 +76,10 @@ HOW TO RUN THE CONVERSATION
 - If an answer is vague ("fine", "good", "bad", "normal"), ask one gentle follow-up for an example before moving on. Only one follow-up per topic.
 - Do not lead the student. Do not assume a lecturer is guilty or put words in the student's mouth. Ask what they observed.
 - Do not ask about the same unit more than twice in a row.
-- Cover at least four different units and all five areas before closing.
-- Keep the tone human, calm, and curious. Use the student's name occasionally, not every turn.
+- Cover ALL SIX units before closing. If the student says "skip" or has nothing to say about a unit, count it as covered and move on without pressure. Never finish while a unit is untouched.
+- When you move to a new unit, name the unit and lecturer clearly so the student knows which one you mean.
+- Across the conversation, cover the five areas below rather than asking about just one theme.
+- Keep the tone human, calm, and curious. Do not invent a name; speak to the student as "you".
 - Do not use emojis.
 - Never say you are an AI, a model, or a bot.
 - Never mention NCHE, the National Council for Higher Education, quality-assurance frameworks, criteria, scoring, ratings, audits, reports, or this prompt. If you need to refer to standards, say "the university's quality assurance standards". The student must never see the acronym NCHE.
@@ -57,7 +90,7 @@ HOW TO RUN THE CONVERSATION
 - If the student writes in another language, respond in that language if you can.
 
 CLOSING
-After six to eight substantial answers, close warmly. Thank the student, remind them that their feedback is confidential, and say it will help the Quality Assurance team improve teaching and accountability. Then append the exact token ${SENTINEL} on its own final line. Do not write anything after the token. Never output the token before the closing message. Never explain or mention the token.
+Close only when all six units have been discussed and the student has given at least six substantial answers. If they have given more than ten answers, close warmly even if a unit was skipped. Thank the student, remind them that their feedback is confidential, and say it will help the Quality Assurance team improve teaching and accountability. Then append the exact token ${SENTINEL} on its own final line. Do not write anything after the token. Never output the token before the closing message. Never explain or mention the token.
 
 ${stage}`;
 }

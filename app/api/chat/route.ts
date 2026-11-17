@@ -1,8 +1,10 @@
 import { cleanMessages, clientKey, jsonError, rateLimit, readLimitedJson } from "@/lib/api";
+import { COURSES, courseSchedule } from "@/lib/courses";
 import { GeminiError, streamGemini } from "@/lib/gemini";
 import {
   SENTINEL,
   chatSystemPrompt,
+  coveredCourseIds,
   sanitizeStudentStream,
 } from "@/lib/prompts";
 
@@ -70,10 +72,13 @@ export async function POST(request: Request): Promise<Response> {
     return jsonError("This conversation has already covered enough ground.", 400);
   }
 
+  const covered = new Set(coveredCourseIds(messages));
+  const remaining = COURSES.filter((course) => !covered.has(course.id));
+
   let gemini: Response;
   try {
     gemini = await streamGemini({
-      systemInstruction: chatSystemPrompt(userTurns),
+      systemInstruction: chatSystemPrompt(userTurns, remaining),
       messages,
       temperature: 0.7,
       maxOutputTokens: 700,
@@ -151,6 +156,16 @@ export async function POST(request: Request): Promise<Response> {
               send({ text: filtered.text });
             }
             if (filtered.complete) {
+              if (remaining.length > 0 && userTurns < 11) {
+                const next = remaining[0];
+                send({
+                  text: ` Before we finish, I still need to ask about ${next.title} with ${next.lecturer} (${courseSchedule(next)}). How did that unit go for you?`,
+                });
+                await reader.cancel().catch(() => undefined);
+                send({ done: true, completed: false });
+                finish();
+                return;
+              }
               completed = true;
               await reader.cancel().catch(() => undefined);
               send({ done: true, completed: true });

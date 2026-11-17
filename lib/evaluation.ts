@@ -21,50 +21,50 @@ export type EvaluationQuestion = {
 export const SCALE_OPTIONS: EvaluationOption[] = [
   {
     value: "1",
-    label: "Strongly disagree",
-    description: "This did not happen at all.",
+    label: "Not at all",
+    description: "That never really happened.",
   },
   {
     value: "2",
-    label: "Disagree",
-    description: "Mostly not, with a few exceptions.",
+    label: "Mostly not",
+    description: "One or two exceptions, but it was rare.",
   },
   {
     value: "3",
-    label: "Neutral",
-    description: "Mixed, inconsistent, or unsure.",
+    label: "It varied",
+    description: "Sometimes yes, sometimes no — I'm not sure.",
   },
   {
     value: "4",
-    label: "Agree",
-    description: "Mostly yes, with room to improve.",
+    label: "Mostly yes",
+    description: "It worked well, with room to improve.",
   },
   {
     value: "5",
-    label: "Strongly agree",
-    description: "This was consistently true.",
+    label: "Consistently",
+    description: "This was true every time.",
   },
   {
     value: "na",
-    label: "Not applicable",
-    description: "I have no basis to judge this.",
+    label: "I can't say",
+    description: "I didn't see enough of this to judge.",
   },
 ];
 
 export const FREQUENCY_OPTIONS: EvaluationOption[] = [
   {
     value: "every",
-    label: "Every scheduled session",
-    description: "No missed classes.",
+    label: "Every session",
+    description: "They were there each time we were scheduled.",
   },
   {
     value: "most",
     label: "Most sessions",
-    description: "A few were missed or rescheduled.",
+    description: "One or two were missed or moved.",
   },
   {
     value: "half",
-    label: "About half",
+    label: "About half the time",
     description: "It was hit and miss.",
   },
   {
@@ -75,11 +75,11 @@ export const FREQUENCY_OPTIONS: EvaluationOption[] = [
   {
     value: "never",
     label: "Never",
-    description: "No scheduled sessions happened.",
+    description: "No scheduled sessions took place.",
   },
   {
     value: "na",
-    label: "Not applicable",
+    label: "No classes to judge",
     description: "There were no scheduled sessions to judge.",
   },
 ];
@@ -94,19 +94,19 @@ function attendanceAnchor(course: Course): string {
 function environmentQuestion(course: Course): string {
   switch (course.id) {
     case "embedded-systems":
-      return "The mix of on-campus and online delivery worked for students joining from both campuses.";
+      return "Did the mix of on-campus and online teaching work for the way you joined this unit?";
     case "data-mining":
-      return "The Monday 8:30 AM – 1:00 PM block was used effectively for learning.";
+      return "Did the long Monday 8:30 AM – 1:00 PM block still feel useful all the way through?";
     case "logic-programming":
-      return "Lab 2 had the equipment and software needed for practical work.";
+      return "Did Lab 2 have the machines, software and space you needed for the practicals?";
     case "business-english":
-      return "The Auditorium was suitable for this class.";
+      return "Was the Auditorium a good place to learn in — could you hear and take part?";
     case "remote-sensing":
-      return "The learning venue was adequate for the class size.";
+      return "Were the room, equipment and class size workable for this unit?";
     case "computability":
-      return "The balance between lecturer explanation and student presentations worked for this unit.";
+      return "Did the mix of lecturer explanation and student presentations help you learn?";
     default:
-      return "The learning environment supported this unit well.";
+      return "Did the learning conditions help you do your best in this unit?";
   }
 }
 
@@ -115,52 +115,52 @@ export function buildQuestions(course: Course): EvaluationQuestion[] {
     {
       id: "outline",
       kind: "scale",
-      prompt: `${course.lecturer} gave us a clear course outline and assessment plan at the start of the semester.`,
-      hint: "Think about week one: what was shared, and did it match what followed?",
+      prompt: `At the start of the semester, did ${course.lecturer} explain what the unit covered and how you would be assessed?`,
+      hint: "Think back to week one. Did what was shared match what actually happened?",
       options: SCALE_OPTIONS,
     },
     {
       id: "attendance",
       kind: "frequency",
-      prompt: `How consistently did ${course.lecturer} attend the scheduled ${attendanceAnchor(course)} sessions?`,
-      hint: "Think about the whole semester, not just one week.",
+      prompt: `How often did ${course.lecturer} show up for the ${attendanceAnchor(course)} classes?`,
+      hint: "Think about the whole semester, not just one good or bad week.",
       options: FREQUENCY_OPTIONS,
     },
     {
       id: "delivery",
       kind: "scale",
-      prompt: "New concepts were explained clearly, with examples beyond reading notes or slides.",
-      hint: "Consider the teaching you actually experienced in this unit.",
+      prompt: "When a topic was new to you, did the teaching help it click — or was it mostly notes and slides?",
+      hint: "Think about the explanations, examples or practical work that made the difference.",
       options: SCALE_OPTIONS,
     },
     {
       id: "assessment",
       kind: "scale",
-      prompt: "Tests and assignments were fair and matched what was taught.",
-      hint: "Think about whether assessments reflected the syllabus and lectures.",
+      prompt: "Did the tests and assignments feel fair, and did they draw on what you were actually taught?",
+      hint: "Could you prepare for them from the lectures and practicals?",
       options: SCALE_OPTIONS,
     },
     {
       id: "feedback",
       kind: "scale",
-      prompt: "Marked work came back with feedback I could use before exams.",
-      hint: "If there was no marked work, choose Not applicable.",
+      prompt: "Did marked work come back in time, with comments you could actually use before the exams?",
+      hint: "No marked work in this unit? Choose \"I can't say\".",
       options: SCALE_OPTIONS,
     },
     {
       id: "environment",
       kind: "scale",
       prompt: environmentQuestion(course),
-      hint: `This is about ${course.venue} and the learning conditions for this unit.`,
+      hint: `This one is about ${course.venue} and the conditions you learned in.`,
       options: SCALE_OPTIONS,
     },
     {
       id: "comment",
       kind: "text",
-      prompt: "Is there anything else the QA office should know about this unit?",
-      hint: "Optional. Add the detail ratings cannot capture.",
+      prompt: "What else should the QA office know about this unit?",
+      hint: "Optional — this is where the detail behind your ratings belongs.",
       optional: true,
-      placeholder: "Share anything that would help the QA office understand your experience.",
+      placeholder: "Tell us in your own words what worked, what didn't, and what should change.",
     },
   ];
 }
