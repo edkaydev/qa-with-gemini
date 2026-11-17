@@ -9,12 +9,10 @@ import {
   Mic,
   MicOff,
   SkipForward,
-  Volume2,
-  VolumeX,
 } from "lucide-react";
 import type { Course } from "@/lib/courses";
 import { courseContext } from "@/lib/courses";
-import { useSpeechPlayback, useVoiceInput } from "@/lib/speech";
+import { useVoiceInput } from "@/lib/speech";
 import {
   buildQuestions,
   firstUnansweredIndex,
@@ -24,6 +22,7 @@ import { cn, estimateRemaining } from "@/lib/utils";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { CourseIcon } from "@/components/ui/CourseIcon";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
 type EvaluationFlowProps = {
   course: Course;
@@ -48,10 +47,8 @@ export function EvaluationFlow({
   });
   const [advancing, setAdvancing] = useState(false);
   const [comment, setComment] = useState(initialAnswers.comment ?? "");
-  const [readAloud, setReadAloud] = useState(false);
   const timer = useRef<number | null>(null);
   const appliedVoiceRef = useRef("");
-  const playback = useSpeechPlayback();
   const voice = useVoiceInput();
 
   const question = questions[index];
@@ -65,19 +62,10 @@ export function EvaluationFlow({
   }, [index, question.kind, answers.comment]);
 
   useEffect(() => {
-    setReadAloud(window.localStorage.getItem("umu.qa.readAloud") === "true");
-  }, []);
-
-  useEffect(() => {
     appliedVoiceRef.current = "";
     voice.reset();
     voice.stop();
   }, [question.id, voice.reset, voice.stop]);
-
-  useEffect(() => {
-    if (!readAloud || !playback.supported) return;
-    playback.speak(`${question.prompt} ${question.hint ?? ""}`);
-  }, [question.id, readAloud, playback.supported, playback.speak]);
 
   useEffect(() => {
     if (question.kind !== "text" || !voice.finalText) return;
@@ -92,9 +80,8 @@ export function EvaluationFlow({
   useEffect(() => {
     return () => {
       if (timer.current) window.clearTimeout(timer.current);
-      playback.stop();
     };
-  }, [playback.stop]);
+  }, []);
 
   function clearTimer() {
     if (timer.current) {
@@ -236,33 +223,8 @@ export function EvaluationFlow({
               <p className="mt-3 text-sm leading-relaxed text-muted">{question.hint}</p>
             ) : null}
 
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              {playback.supported ? (
-                <button
-                  type="button"
-                  aria-pressed={readAloud}
-                  onClick={() => {
-                    const next = !readAloud;
-                    setReadAloud(next);
-                    window.localStorage.setItem("umu.qa.readAloud", String(next));
-                    if (!next) playback.stop();
-                  }}
-                  className={cn(
-                    "inline-flex min-h-[38px] items-center gap-1.5 rounded-xl border px-3 text-[11px] font-semibold transition-colors",
-                    readAloud
-                      ? "border-umu-red/30 bg-umu-red-soft text-umu-red"
-                      : "border-line bg-white text-muted hover:border-umu-red/30 hover:text-ink",
-                  )}
-                >
-                  {readAloud ? (
-                    <Volume2 size={14} aria-hidden="true" />
-                  ) : (
-                    <VolumeX size={14} aria-hidden="true" />
-                  )}
-                  {readAloud ? "Reading questions aloud" : "Read questions aloud"}
-                </button>
-              ) : null}
-              {question.kind === "text" && voice.supported ? (
+            {question.kind === "text" && voice.supported ? (
+              <div className="mt-4">
                 <button
                   type="button"
                   aria-pressed={voice.listening}
@@ -281,8 +243,8 @@ export function EvaluationFlow({
                   )}
                   {voice.listening ? "Stop listening" : "Speak your answer"}
                 </button>
-              ) : null}
-            </div>
+              </div>
+            ) : null}
 
             {question.kind === "text" && voice.interimText ? (
               <p className="mt-2 text-[11px] italic text-muted" aria-live="polite">
@@ -416,6 +378,16 @@ export function EvaluationFlow({
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={voice.permissionBlocked}
+        title="Allow microphone access?"
+        description="Your browser blocked the microphone. Choose Allow in the permission prompt, or click the site icon in your browser's address bar and set Microphone to Allow. You can still type your answer instead."
+        confirmLabel="Allow microphone"
+        cancelLabel="Type instead"
+        onConfirm={() => void voice.start()}
+        onCancel={voice.reset}
+      />
     </div>
   );
 }

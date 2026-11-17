@@ -403,8 +403,8 @@ export default function HomePage() {
                 href="/solution1"
                 eyebrow="Focus mode"
                 title="Small questions. Honest answers."
-                description="A calm, tap-through check-in that asks about what really happened in each unit. Questions can be read aloud, and you can pick up where you left off."
-                tags={["Read aloud", "One at a time", "Resume later"]}
+                description="A calm, tap-through check-in that asks about what really happened in each unit, one question at a time, and you can pick up where you left off."
+                tags={["One at a time", "Resume later"]}
                 icon={<MousePointerClick size={20} aria-hidden="true" />}
                 accent="red"
                 preview={<FocusPreview />}

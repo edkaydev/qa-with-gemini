@@ -14,8 +14,6 @@ import {
   ShieldCheck,
   Sparkles,
   Timer,
-  Volume2,
-  VolumeX,
   X,
 } from "lucide-react";
 import { SiteHeader } from "@/components/site/SiteHeader";
@@ -39,7 +37,7 @@ import {
   writeConversation,
   type ChatMessage,
 } from "@/lib/storage";
-import { useSpeechPlayback, useVoiceInput } from "@/lib/speech";
+import { useVoiceInput } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 
 type ReportState = "idle" | "loading" | "ready" | "error";
@@ -311,7 +309,6 @@ export function ChatExperience() {
   const [reportState, setReportState] = useState<ReportState>("idle");
   const [reportOpen, setReportOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
-  const [readAloud, setReadAloud] = useState(false);
 
   const abortRef = useRef<AbortController | null>(null);
   const reportInFlight = useRef(false);
@@ -319,8 +316,6 @@ export function ChatExperience() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const nearBottomRef = useRef(true);
   const appliedVoiceRef = useRef("");
-  const lastSpokenRef = useRef<string | null>(null);
-  const playback = useSpeechPlayback();
   const voice = useVoiceInput();
 
   const userTurns = messages.filter((message) => message.role === "user").length;
@@ -343,7 +338,6 @@ export function ChatExperience() {
     } else {
       setMessages([openingMessage()]);
     }
-    setReadAloud(window.localStorage.getItem("umu.qa.readAloud") === "true");
     setReady(true);
   }, []);
 
@@ -358,19 +352,8 @@ export function ChatExperience() {
   useEffect(() => {
     return () => {
       abortRef.current?.abort();
-      playback.stop();
     };
-  }, [playback.stop]);
-
-  useEffect(() => {
-    if (!readAloud || !playback.supported || streaming) return;
-    const latest = [...messages].reverse().find(
-      (message) => message.role === "assistant" && message.content.trim(),
-    );
-    if (!latest || lastSpokenRef.current === latest.id) return;
-    lastSpokenRef.current = latest.id;
-    playback.speak(latest.content);
-  }, [messages, streaming, readAloud, playback.supported, playback.speak]);
+  }, []);
 
   useEffect(() => {
     if (!voice.finalText) return;
@@ -602,10 +585,8 @@ export function ChatExperience() {
 
   function resetConversation() {
     abortRef.current?.abort();
-    playback.stop();
     voice.reset();
     appliedVoiceRef.current = "";
-    lastSpokenRef.current = null;
     clearConversation();
     setMessages([openingMessage()]);
     setCompleted(false);
@@ -629,33 +610,6 @@ export function ChatExperience() {
         confidential
         right={
           <div className="flex items-center gap-1.5">
-            {playback.supported ? (
-              <button
-                type="button"
-                aria-pressed={readAloud}
-                aria-label={readAloud ? "Turn off read aloud" : "Read questions aloud"}
-                title={readAloud ? "Turn off read aloud" : "Read questions aloud"}
-                onClick={() => {
-                  const next = !readAloud;
-                  setReadAloud(next);
-                  window.localStorage.setItem("umu.qa.readAloud", String(next));
-                  if (!next) playback.stop();
-                  if (next) lastSpokenRef.current = null;
-                }}
-                className={cn(
-                  "flex h-9 w-9 items-center justify-center rounded-xl transition-colors",
-                  readAloud
-                    ? "bg-umu-red-soft text-umu-red"
-                    : "text-muted hover:bg-surface-1 hover:text-ink",
-                )}
-              >
-                {readAloud ? (
-                  <Volume2 size={16} aria-hidden="true" />
-                ) : (
-                  <VolumeX size={16} aria-hidden="true" />
-                )}
-              </button>
-            ) : null}
             {report ? (
               <button
                 type="button"
@@ -992,6 +946,16 @@ export function ChatExperience() {
         onConfirm={resetConversation}
         onCancel={() => setResetOpen(false)}
         destructive
+      />
+
+      <ConfirmDialog
+        open={voice.permissionBlocked}
+        title="Allow microphone access?"
+        description="Your browser blocked the microphone. Choose Allow in the permission prompt, or click the site icon in your browser's address bar and set Microphone to Allow. You can still type your answer instead."
+        confirmLabel="Allow microphone"
+        cancelLabel="Type instead"
+        onConfirm={() => void voice.start()}
+        onCancel={voice.reset}
       />
     </div>
   );

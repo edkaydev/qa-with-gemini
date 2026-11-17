@@ -37,63 +37,13 @@ function recognitionConstructor(): RecognitionConstructor | null {
   return scope.SpeechRecognition ?? scope.webkitSpeechRecognition ?? null;
 }
 
-function preferredVoice(): SpeechSynthesisVoice | undefined {
-  const voices = window.speechSynthesis.getVoices();
-  return (
-    voices.find((voice) => /en[-_]UG/i.test(voice.lang)) ??
-    voices.find((voice) => /en[-_]GB/i.test(voice.lang)) ??
-    voices.find((voice) => /^en/i.test(voice.lang))
-  );
-}
-
-export function useSpeechPlayback() {
-  const [supported, setSupported] = useState(false);
-  const [speaking, setSpeaking] = useState(false);
-
-  useEffect(() => {
-    setSupported(typeof window !== "undefined" && "speechSynthesis" in window);
-    return () => {
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
-    };
-  }, []);
-
-  const stop = useCallback(() => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    setSpeaking(false);
-  }, []);
-
-  const speak = useCallback((text: string) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    const clean = text
-      .replace(/\[\[DONE\]\]/g, "")
-      .replace(/[*_`#]/g, "")
-      .trim();
-    if (!clean) return;
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(clean);
-    utterance.rate = 0.98;
-    utterance.pitch = 1;
-    const voice = preferredVoice();
-    if (voice) utterance.voice = voice;
-    utterance.onstart = () => setSpeaking(true);
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(utterance);
-  }, []);
-
-  return { supported, speaking, speak, stop };
-}
-
 export function useVoiceInput() {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const [finalText, setFinalText] = useState("");
   const [interimText, setInterimText] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [permissionBlocked, setPermissionBlocked] = useState(false);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const finalRef = useRef("");
 
@@ -110,6 +60,7 @@ export function useVoiceInput() {
     setFinalText("");
     setInterimText("");
     setError(null);
+    setPermissionBlocked(false);
   }, []);
 
   const stop = useCallback(() => {
@@ -117,7 +68,7 @@ export function useVoiceInput() {
     setListening(false);
   }, []);
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     const Constructor = recognitionConstructor();
     if (!Constructor) {
       setError("Voice answers are not supported in this browser. Please type instead.");
@@ -126,6 +77,17 @@ export function useVoiceInput() {
 
     recognitionRef.current?.abort();
     reset();
+
+    if (typeof navigator !== "undefined" && navigator.mediaDevices?.getUserMedia) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach((track) => track.stop());
+      } catch {
+        setPermissionBlocked(true);
+        setListening(false);
+        return;
+      }
+    }
 
     const recognition = new Constructor();
     recognition.lang = "en-UG";
@@ -151,7 +113,7 @@ export function useVoiceInput() {
     recognition.onerror = (event) => {
       if (event.error === "no-speech") return;
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
-        setError("Microphone access was blocked. Allow it in your browser, or type instead.");
+        setPermissionBlocked(true);
       } else {
         setError("Voice answers had a problem. You can keep typing instead.");
       }
@@ -170,5 +132,15 @@ export function useVoiceInput() {
     }
   }, [reset]);
 
-  return { supported, listening, finalText, interimText, error, start, stop, reset };
+  return {
+    supported,
+    listening,
+    finalText,
+    interimText,
+    error,
+    permissionBlocked,
+    start,
+    stop,
+    reset,
+  };
 }
