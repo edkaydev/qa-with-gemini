@@ -1,6 +1,6 @@
 import type { TranscriptMessage } from "./prompts";
 
-const DEFAULT_MODEL = "gemini-3.5-flash";
+const DEFAULT_MODEL = "gemini-3.5-flash-lite";
 const API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 
 export class GeminiError extends Error {
@@ -28,6 +28,10 @@ export function getModel(): string {
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function thinkingConfig(): { thinkingConfig?: { thinkingBudget: number } } {
+  return /-lite(?:\b|$)/.test(getModel()) ? {} : { thinkingConfig: { thinkingBudget: 0 } };
 }
 
 function contentsFor(messages: TranscriptMessage[]) {
@@ -117,7 +121,7 @@ export async function streamGemini(options: {
       generationConfig: {
         temperature: options.temperature ?? 0.7,
         maxOutputTokens: options.maxOutputTokens ?? 700,
-        thinkingConfig: { thinkingBudget: 0 },
+        ...thinkingConfig(),
       },
     },
     options.signal,
@@ -139,10 +143,10 @@ export async function generateGeminiJson<T>(options: {
       contents: [{ role: "user", parts: [{ text: options.prompt }] }],
       generationConfig: {
         temperature: options.temperature ?? 0.2,
-        maxOutputTokens: options.maxOutputTokens ?? 4096,
+        maxOutputTokens: options.maxOutputTokens ?? 2048,
         responseMimeType: "application/json",
         responseSchema: options.schema,
-        thinkingConfig: { thinkingBudget: 0 },
+        ...thinkingConfig(),
       },
     },
     options.signal,

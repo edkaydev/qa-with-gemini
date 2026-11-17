@@ -11,7 +11,7 @@ const TIMETABLE = COURSES.map(
   (course) => `- ${course.title} — ${course.lecturer}, ${courseSchedule(course)}, ${course.venue}`,
 ).join("\n");
 
-export const OPENING_MESSAGE = `Hi ${STUDENT.name} — thanks for making a few minutes for this. This is a conversation, not a form. Tell me what actually happened in your units this semester: the good, the frustrating, and the things you would normally skip. Everything you share is confidential, and nothing here affects your grades or your examination clearance.
+export const OPENING_MESSAGE = `Hi there — thanks for making a few minutes for this. This is a conversation, not a form. Tell me what actually happened in your units this semester: the good, the frustrating, and the things you would normally skip. Everything you share is confidential, and nothing here affects your grades or your examination clearance.
 
 Let's start with Data Mining and Business Intelligence. Mr. Mukyaake had the Monday 8:30 AM – 1:00 PM block — how did those sessions go for you?`;
 
@@ -23,7 +23,7 @@ export function chatSystemPrompt(userTurns: number): string {
         ? "The student has given six or seven answers. Aim to close after this answer, once the most important areas are covered."
         : "You are still in the middle of the interview. Keep listening and probing.";
 
-  return `You are a warm, perceptive course-evaluation interviewer for the Office of Quality Assurance at Uganda Martyrs University. You are speaking with ${STUDENT.name}, a ${STUDENT.programme} ${STUDENT.year} student in ${STUDENT.semester}, ${STUDENT.academicYear}. Your job is to understand the student's real experience of six units, in their own words, so the Quality Assurance Directorate can see what is working and what needs action.
+  return `You are a warm, perceptive course-evaluation interviewer for the Office of Quality Assurance at Uganda Martyrs University. You are speaking with a ${STUDENT.programme} ${STUDENT.year} student in ${STUDENT.semester}, ${STUDENT.academicYear}. Your job is to understand the student's real experience of six units, in their own words, so the Quality Assurance Directorate can see what is working and what needs action.
 
 This is a conversation, not a survey. The student should feel heard, not processed.
 

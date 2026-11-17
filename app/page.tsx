@@ -125,24 +125,21 @@ type SolutionCardProps = {
 
 const accentClasses = {
   red: {
-    top: "from-umu-red to-[#FF6B6B]",
     number: "text-umu-red",
     icon: "bg-umu-red-soft text-umu-red",
-    tag: "border-umu-red/15 bg-umu-red-soft text-umu-red",
+    tag: "bg-umu-red-soft text-umu-red",
     button: "bg-umu-red text-white hover:bg-umu-red-dark",
   },
   yellow: {
-    top: "from-umu-yellow to-[#FFE66D]",
     number: "text-[#9A7A00]",
     icon: "bg-umu-yellow-soft text-[#7A5A00]",
-    tag: "border-umu-yellow/30 bg-umu-yellow-soft text-[#7A5A00]",
+    tag: "bg-umu-yellow-soft text-[#7A5A00]",
     button: "bg-ink text-white hover:bg-[#2A2A44]",
   },
   ink: {
-    top: "from-ink to-[#4A4A6A]",
     number: "text-ink",
     icon: "bg-surface-1 text-ink",
-    tag: "border-line bg-surface-1 text-muted",
+    tag: "bg-surface-1 text-muted",
     button: "bg-ink text-white hover:bg-[#2A2A44]",
   },
 };
@@ -164,7 +161,6 @@ function SolutionCard({
       href={href}
       className="group card-surface relative flex h-full flex-col overflow-hidden p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lift focus:outline-none focus-visible:ring-4 focus-visible:ring-umu-red/20 sm:p-7"
     >
-      <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${styles.top}`} />
       <div className="flex items-start justify-between gap-4">
         <span className={`text-[13px] font-black tracking-tight ${styles.number}`}>{number}</span>
         <span
@@ -186,7 +182,7 @@ function SolutionCard({
           {tags.map((tag) => (
             <span
               key={tag}
-              className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold ${styles.tag}`}
+              className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${styles.tag}`}
             >
               {tag}
             </span>

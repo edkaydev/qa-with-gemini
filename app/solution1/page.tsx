@@ -58,10 +58,10 @@ function StudentChip() {
   return (
     <div className="flex items-center gap-2.5">
       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-umu-red text-xs font-bold text-white">
-        {STUDENT.name.slice(0, 1)}
+        S
       </span>
       <div className="hidden text-left md:block">
-        <p className="text-xs font-semibold leading-tight text-ink">{STUDENT.name}</p>
+        <p className="text-xs font-semibold leading-tight text-ink">Student</p>
         <p className="text-[10px] leading-tight text-muted">
           {STUDENT.programme} · {STUDENT.year}
         </p>
@@ -260,7 +260,7 @@ function ExamCard() {
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted">
             Semester II Examination Clearance
           </p>
-          <p className="mt-2 text-xl font-black tracking-tight text-ink">{STUDENT.name}</p>
+          <p className="mt-2 text-xl font-black tracking-tight text-ink">Student</p>
           <p className="text-xs text-muted">
             {STUDENT.programme} · {STUDENT.year}
           </p>
@@ -324,7 +324,7 @@ function DashboardView({
                 </StatusPill>
               </div>
               <h1 className="mt-4 text-balance text-3xl font-black leading-tight tracking-[-0.03em] text-ink sm:text-4xl">
-                {greeting()}, {STUDENT.name}.
+                {greeting()}.
               </h1>
               <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
                 One question at a time. Tap an answer and move on. Your feedback is confidential,

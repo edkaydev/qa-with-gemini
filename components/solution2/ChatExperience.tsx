@@ -21,7 +21,7 @@ import { ProgressBar } from "@/components/ui/ProgressBar";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { QaReportDrawer } from "@/components/solution2/QaReportDrawer";
-import { COURSES, STUDENT, courseSchedule } from "@/lib/courses";
+import { COURSES, courseSchedule } from "@/lib/courses";
 import {
   OPENING_MESSAGE,
   sanitizeStudentStream,
@@ -754,7 +754,7 @@ export function ChatExperience() {
                       <div>
                         <p className="text-xs font-bold text-success">Conversation complete</p>
                         <p className="text-[10px] text-muted">
-                          Thank you, {STUDENT.name}. Your feedback is recorded confidentially.
+                          Thank you. Your feedback is recorded confidentially.
                         </p>
                       </div>
                     </div>

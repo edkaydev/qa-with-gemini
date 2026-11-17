@@ -28,7 +28,6 @@ export type Course = {
 };
 
 export const STUDENT = {
-  name: "Edward",
   programme: "BSc Computer Science",
   year: "Year 3",
   semester: "Semester II",
